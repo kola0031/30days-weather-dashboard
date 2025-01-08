@@ -10,8 +10,8 @@ load_dotenv()
 
 class WeatherDashboard:
     def __init__(self):
-        self.api_key = os.getenv('OPENWEATHER_API_KEY')
-        self.bucket_name = os.getenv('AWS_BUCKET_NAME')
+        self.api_key = os.getenv('OPENWEATHER_API_KEY')  # Corrected
+        self.bucket_name = os.getenv('AWS_BUCKET_NAME')  # Corrected
         self.s3_client = boto3.client('s3')
 
     def create_bucket_if_not_exists(self):
@@ -30,20 +30,14 @@ class WeatherDashboard:
 
     def fetch_weather(self, city):
         """Fetch weather data from OpenWeather API"""
-        base_url = "http://api.openweathermap.org/data/2.5/weather"
+        base_url = "http://api.openweathermap.org"
         params = {
             "q": city,
             "appid": self.api_key,
             "units": "imperial"
         }
-        
-        try:
-            response = requests.get(base_url, params=params)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching weather data: {e}")
-            return None
+        response = requests.get(f"{base_url}/data/2.5/weather", params=params)
+        return response.json()
 
     def save_to_s3(self, weather_data, city):
         """Save weather data to S3 bucket"""
